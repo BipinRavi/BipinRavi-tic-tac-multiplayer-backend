@@ -4,6 +4,7 @@ const io = new Server({
   cors: {
     origin: "http://localhost:3000",
   },
+  connectionStateRecovery: true,
 });
 
 io.on("connection", (socket) => {
