@@ -1,21 +1,23 @@
 const { v4: uuidv4 } = require("uuid");
-const { addRoom } = require("../files/data");
-
-const createRoom = (req, res) => {
-  const { name, noOfRounds } = req.body;
+const createRoom = (name, noOfRounds, socketId) => {
   if (name && noOfRounds) {
     const room = {
       noOfRounds,
       roomId: uuidv4(),
-      player1: name,
-      player2: null,
+      player1: {
+        name: name,
+        socketId: socketId,
+      },
+      player2: {
+        name: null,
+        socketId: null,
+      },
     };
 
-    addRoom(room);
 
-    res.status(200).json(room);
+    return room;
   } else {
-    res.status(400).json({ message: "Please provide the details" });
+    console.log("Invalid data");
   }
 };
 
