@@ -4,7 +4,7 @@ const { createServer } = require("http");
 const { createRoom } = require("./app/room");
 const { getRoom, updateRoom, addRoom } = require("./files/data");
 const e = require("cors");
-const { joinRandom } = require("./files/random");
+const { joinRandom, leaveRandom } = require("./files/random");
 
 const app = express();
 const server = createServer(app);
@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 //socket.io server
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "*",
   },
   connectionStateRecovery: {},
 });
@@ -35,7 +35,7 @@ io.on("connection", (socket) => {
     const room = getRoom(roomId);
     if (!room) socket.emit("roomNotFound");
     console.log("change", data, "at", num, "by", player);
-    io.to(roomId).emit("change", data, num);
+    socket.broadcast.to(roomId).emit("change", data, num);
   });
   socket.on("createRoom", (name, noOfRounds) => {
     const room = createRoom(name, noOfRounds, socket.id);
@@ -139,7 +139,12 @@ io.on("connection", (socket) => {
   socket.on("disconnect", (para) => {
     console.log("disconnected");
   });
+
+  socket.on("leaveRandom", (roomId) => {
+    leaveRandom(roomId);
+  });
 });
+
 //app server handler
 app.get("/", (req, res) => {
   res.send("Hello World");

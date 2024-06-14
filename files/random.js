@@ -8,6 +8,10 @@ const joinRandom = (name, socketId) => {
   let room;
   if (isEmpty) {
     room = randomRoom.find((room) => room.roomId == emptyRoomId);
+    if (!room) {
+      isEmpty = false;
+      return { isEmpty, room };
+    }
     room.player2 = { name, socketId };
     const index = randomRoom.findIndex((room) => room.roomId === emptyRoomId);
     randomRoom[index] = room;
@@ -22,4 +26,11 @@ const joinRandom = (name, socketId) => {
   return { isEmpty, room };
 };
 
-module.exports = { joinRandom };
+const leaveRandom = (roomId) => {
+  const index = randomRoom.findIndex((room) => room.roomId === roomId);
+  if (index !== -1) {
+    return randomRoom.splice(index, 1)[0];
+  }
+};
+
+module.exports = { joinRandom, leaveRandom };
